@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import formidable from "formidable";
 import fs from "fs";
 import path from "path";
+import cors from "cors";
 
 dotenv.config();
 const app = express();
@@ -27,23 +28,31 @@ mongoose.connection.on("error", (err: Error) => {
 //middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+app.use(express.static("."));
+app.use("/upload", express.static("upload"));
 
 app.use(morgan("dev"));
 app.use(helmet());
 app.use(compression());
 
 app.get("/", (req, res) => {
-  res.send(`
-      <h2>With <code>"express"</code> npm package</h2>
-      <form action="/api/upload" enctype="multipart/form-data" method="post">
-        <div>Text field title: <input type="text" name="title" /></div>
-        <div>File: <input type="file" name="someExpressFiles" multiple="multiple" /></div>
-        <input type="submit" value="Upload" />
-      </form>
+  let imgs: string[] = [];
+  const uploadsPath = path.join(__dirname, "..", "uploads");
+  fs.readdir(uploadsPath, (err, files) => {
+    console.log({ files, uploadsPath });
+    imgs = files;
+    const html = files.map((img) => `<img src="uploads/${img}" />`);
+    return res.send(`
+      <div>
+      ${html}
+      </div>
     `);
+  });
 });
 
 app.post("/api/upload", (req, res) => {
+  console.log("Req", req.body);
   const uploadDir = path.join(__dirname, "..", "uploads");
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir);
@@ -58,7 +67,6 @@ app.post("/api/upload", (req, res) => {
     multiples: true,
   };
   const form = formidable(customOptions);
-
   form.parse(req, (err, fields, files) => {
     if (err) {
       console.log("Error", err);
