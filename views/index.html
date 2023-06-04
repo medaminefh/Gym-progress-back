@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+
+{% block main%}
+Hello world, my name is {{name}}
+
+{% for file in files %}
+    <img src="views/uploads/{{file}}" loading="lazy" width="400px" />
+{% endfor %}
+
+{% endblock%}
