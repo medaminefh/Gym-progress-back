@@ -36,5 +36,8 @@
     "@types/nunjucks": "^3.2.2",
     "nodemon": "^2.0.22",
     "typescript": "^5.0.4"
+  },
+  "engines": {
+    "node": "18.16.0"
   }
 }

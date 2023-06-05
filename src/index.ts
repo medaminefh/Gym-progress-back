@@ -37,7 +37,6 @@ app.get("/", (_, res) => {
 		fs.readdir(uploadDir, (err, files) => {
 			console.log({ files, uploadDir });
 			if (files && files.length) {
-				const html = files.map((img) => `<img src="uploads/${img}" />`);
 				return res.render("index.html", {
 					name: "Mohamed amine fhal",
 					files,
